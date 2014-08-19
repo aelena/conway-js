@@ -91,6 +91,7 @@ function $(selector, container){
     
     _.prototype = {
         createGrid: function (){
+            var _me = this;
             var _table = document.createDocumentFragment();
             this.grid.innerHTML='';
             this.checkBoxes = [];
@@ -102,6 +103,8 @@ function $(selector, container){
                     var _cell = document.createElement('td');
                     var _cbox = document.createElement('input');
                     _cbox.type = 'checkbox';
+                    // store also a data struct to know which cbox this is
+                    _cbox.position = [y, x];    // row, col
                     _cell.appendChild(_cbox);
                     _row.appendChild(_cell);
                     this.checkBoxes[y][x] = _cbox;
@@ -118,6 +121,35 @@ function $(selector, container){
                 if(e.target.nodeName.toLowerCase() === "input")
                     this.started = false;
             });
+            
+            this.grid.addEventListener('keyup', function(e){
+                var cbox = e.target;
+                if(cbox.nodeName.toLowerCase() === "input"){
+                    // get coords of current target
+                    var x = cbox.position[1];                    
+                    var y = cbox.position[0];
+
+                    switch(e.keyCode){
+                        case 37:    // left
+                            if(x > 0)
+                                _me.checkBoxes[y][x-1].focus();
+                            break;
+                        case 38:        // up
+                            if(y > 0)
+                                _me.checkBoxes[y-1][x].focus();
+                            break;
+                        case 39:        // right
+                            if(x < (_me.size -1 ) )
+                                _me.checkBoxes[y][x+1].focus();
+                            break;
+                        case 40:    // down
+                             if(y < (_me.size -1 ) )
+                                _me.checkBoxes[y+1][x].focus();
+                            break;
+                            
+                    }
+                }
+            }, true);
             
             
         },
